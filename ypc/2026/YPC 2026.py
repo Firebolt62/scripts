@@ -1,136 +1,140 @@
 import random
 import time
+from dataclasses import dataclass
+
+@dataclass
+class Enemy:
+    name: str
+    health: int
+    class_type: str
+    abilities: list
+
+@dataclass
+class Character:
+    name: str
+    health: int
+    class_type: str
+    abilities: list
 
 enemies = [
-    "Blastoise",
-    "Thundercat",
-    "Magicarp",
-    "Mewtwo"]
+    Enemy("Blastoise", 100, None,
+          [ "Root Bind"
+          , "Mind Shatter"
+          , "Future Sight Echo"
+          , "Telekinetic Crush"
+          ])
+    ,
+    Enemy("Thundercat", 100, None,
+          [ "Vine Dominion"
+          , "Spore Mist"
+          , "Nature's Renewal"
+          , "Thorn Burst"
+          ])
+    ,
+    Enemy("Magicarp", 100, None,
+          [ "Thunder Call"
+          , "Cloud Step"
+          , "Pressure Crush"
+          , "Sky Splitter"
+          ])
+    ,
+    Enemy("Mewtwo", 100, None,
+          [ "Terra Break"
+          , "Frost Bloom"
+          , "Sandstorm Veil"
+          , "Magma Armor"
+          ])
+]
 
-enemyAbilities = [
-    "Inferno Pulse",
-    "Tidal Grasp",
-    "Volt Surge",
-    "Terra Break",
-    "Frost Bloom",
-    "Sandstorm Veil",
-    "Magma Armor",
-    "Cyclone Dash",
-    "Thunder Call",
-    "Cloud Step",
-    "Pressure Crush",
-    "Sky Splitter",
-    "Vine Dominion",
-    "Spore Mist",
-    "Nature's Renewal",
-    "Thorn Burst",
-    "Root Bind",
-    "Mind Shatter",
-    "Future Sight Echo",
-    "Telekinetic Crush"]
+characters = [
+    Character("Firebolt", 100, "Lightning",
+              [ "Flame Whip"
+              , "Ground Thrash"
+              , "Thunderslash"
+              , "Waterwheel"
+              , "Charge and Blast"
+              ])
+    ]
 
-character = {
-    "name":"Firebolt",
-    "health":100,
-    "class":"Lightning",
-    "abilities": [
-        "Flame Whip",
-        "Ground Thrash",
-        "Thunderslash",
-        "Waterwheel",
-        "Charge and Blast"]
-}
-
-name = random.choice(enemies)
-enemyChoice = random.choice(enemyAbilities)
-
-enemy = {"name":name,
-         "health":100,
-         "abilities":enemyAbilities,}
-
-def reset_game():
-    global enemy, name, enemyChoice
+def reset_game(character):
     
-    name = random.choice(enemies)
-    enemyChoice = random.choice(enemyAbilities)
-
-    enemy = {
-        "name": name,
-        "health": 100,
-        "abilities": enemyAbilities
-    }
-
-    character["health"] = 100
+    enemy = random.choice(enemies)
+    character.health = 100
     print()
-    print(f"A wild {enemy['name']} appears!\n")
-    
-def playerAttack():
-    global DamageDealt
-    DamageDealt = random.randint(10,35)
-    enemy["health"]-= DamageDealt
+    print(f"A wild {enemy.name} appears!\n")
 
-def enemyAttack():
-    global enemyChoice
-    global DamageDealt
-    ability = random.choice(enemy["abilities"])
-    enemyChoice = ability
-    DamageDealt = random.randint(10,35)
-    character["health"]-= DamageDealt
+    return enemy
+ 
+def player_attack(enemy):
+    damage_dealt = random.randint(10,35)
+    enemy.health-= damage_dealt
+    return damage_dealt
 
-reset_game()
+def enemy_attack(enemy, character):
+    ability = random.choice(enemy.abilities)
+    damage_dealt = random.randint(10,35)
+    character.health -= damage_dealt
+    return (damage_dealt, ability)
 
-while enemy["health"] > 0 and character["health"] > 0:
+def main():
+    damage_dealt = 0
+    character = characters[0]
+    enemy = reset_game(character)
 
-    for i, ability in enumerate(character["abilities"], 1):
-        print(f"{i}. {ability}")
+    while enemy.health > 0 and character.health > 0:
 
-    choice = -1
+        for i, ability in enumerate(character.abilities, 1):
+            print(f"{i}. {ability}")
 
-    try:
-        print()
-        choice = int(input("choose your ability number: ")) - 1
-    except ValueError:
-        pass
+        choice = -1
 
-    print()   
-    if choice >= 0 and choice < len(character["abilities"]):
-        time.sleep(0.7)
-        print(f"You used {character["abilities"][choice]}!")
-        playerAttack()
-        time.sleep(0.7)
-        print(f"You dealt {DamageDealt} damage!")
-        time.sleep(0.7)
-        if enemy["health"] <= 0:
-            print(f"You defeated {enemy['name']}!")
-            time.sleep(0.7) 
+        try:
             print()
-            print("Next enemy approaches...")
-            time.sleep(2)
-            reset_game()
-            continue
-        else:
+            choice = int(input("choose your ability number: ")) - 1
+        except ValueError:
             pass
-        print(f"{enemy["name"]} now has {enemy['health']} health!")
-        print()
-        enemyAttack()
-        time.sleep(1.5)
-        print(f"{enemy['name']} used {enemyChoice}!")
-        time.sleep(0.7)
-        print(f"{enemy['name']} dealt {DamageDealt} damage!")
-        time.sleep(0.7)
-        if character["health"] <= 0:
-            print(f"You were defeated by {enemy['name']}!")
-            time.sleep(0.7) 
+
+        print()   
+        if choice >= 0 and choice < len(character.abilities):
+            time.sleep(0.7)
+            print(f"You used {character.abilities[choice]}!")
+            damage_dealt = player_attack(enemy)
+            time.sleep(0.7)
+            print(f"You dealt {damage_dealt} damage!")
+            time.sleep(0.7)
+            if enemy.health <= 0:
+                print(f"You defeated {enemy.name}!")
+                time.sleep(0.7) 
+                print()
+                print("Next enemy approaches...")
+                time.sleep(2)
+                enemy = reset_game(character)
+                continue
+
+            print(f"{enemy.name} now has {enemy.health} health!")
             print()
-            print("Next enemy approaches...")
-            time.sleep(2)
-            reset_game()
-            continue
+            
+            damage_dealt, ability = enemy_attack(enemy, character)
+            time.sleep(1.5)
+            print(f"{enemy.name} used {ability}!")
+            time.sleep(0.7)
+            print(f"{enemy.name} dealt {damage_dealt} damage!")
+            time.sleep(0.7)
+            if character.health <= 0:
+                print(f"You were defeated by {enemy.name}!")
+                time.sleep(0.7) 
+                print()
+                print("Next enemy approaches...")
+                time.sleep(2)
+                enemy = reset_game(character)
+                continue
+
+            print(f"You now have {character.health} health!")
+            print()
+            time.sleep(0.7)
         else:
-            pass
-        print(f"You now have {character['health']} health!")
-        print()
-        time.sleep(0.7)
-    else:
-        print(f"Please choose an option from 1 - {len(character['abilities'])}")
-        print()
+            print(f"Please choose an option from 1 - {len(character.abilities)}")
+            print()
+
+if __name__ == "__main__":
+    main()

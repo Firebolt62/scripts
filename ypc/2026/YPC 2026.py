@@ -1,7 +1,12 @@
 import random
 import time
 from dataclasses import dataclass
-
+'''
+===============================
+YPC 2026 - Battle Game
+Developed by: Adnan Poonawala
+===============================
+'''
 @dataclass
 class Enemy:
     name: str
@@ -59,14 +64,15 @@ characters = [
 def reset_game(character):
     
     enemy = random.choice(enemies)
+    enemy.health = 100
     character.health = 100
     print()
     print(f"A wild {enemy.name} appears!\n")
 
     return enemy
  
-def player_attack(enemy):
-    damage_dealt = random.randint(10,35)
+def player_attack(enemy, difficulty):
+    damage_dealt = int(random.randint(10,35) / (1.0 * difficulty))
     enemy.health-= damage_dealt
     return damage_dealt
 
@@ -77,6 +83,7 @@ def enemy_attack(enemy, character):
     return (damage_dealt, ability)
 
 def main():
+    difficulty = 1
     damage_dealt = 0
     character = characters[0]
     enemy = reset_game(character)
@@ -98,9 +105,9 @@ def main():
         if choice >= 0 and choice < len(character.abilities):
             time.sleep(0.7)
             print(f"You used {character.abilities[choice]}!")
-            damage_dealt = player_attack(enemy)
+            damage_dealt = player_attack(enemy, difficulty)
             time.sleep(0.7)
-            print(f"You dealt {damage_dealt} damage!")
+            print(f"You dealt {damage_dealt}% damage!")
             time.sleep(0.7)
             if enemy.health <= 0:
                 print(f"You defeated {enemy.name}!")
@@ -108,17 +115,18 @@ def main():
                 print()
                 print("Next enemy approaches...")
                 time.sleep(2)
+                difficulty *= 1.2
                 enemy = reset_game(character)
                 continue
 
-            print(f"{enemy.name} now has {enemy.health} health!")
+            print(f"{enemy.name} now has {enemy.health}% health!")
             print()
             
             damage_dealt, ability = enemy_attack(enemy, character)
             time.sleep(1.5)
             print(f"{enemy.name} used {ability}!")
             time.sleep(0.7)
-            print(f"{enemy.name} dealt {damage_dealt} damage!")
+            print(f"{enemy.name} dealt {damage_dealt}% damage!")
             time.sleep(0.7)
             if character.health <= 0:
                 print(f"You were defeated by {enemy.name}!")
@@ -126,10 +134,11 @@ def main():
                 print()
                 print("Next enemy approaches...")
                 time.sleep(2)
+                difficulty *= 1.2
                 enemy = reset_game(character)
                 continue
 
-            print(f"You now have {character.health} health!")
+            print(f"You now have {character.health}% health!")
             print()
             time.sleep(0.7)
         else:

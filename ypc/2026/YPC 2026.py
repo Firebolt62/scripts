@@ -88,7 +88,7 @@ def main():
     character = characters[0]
     enemy = reset_game(character)
 
-    while enemy.health > 0 and character.health > 0:
+    while True:
 
         for i, ability in enumerate(character.abilities, 1):
             print(f"{i}. {ability}")

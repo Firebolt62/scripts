@@ -72,8 +72,11 @@ def player_attack(enemy, difficulty):
     #TODO: make abilities have specific damage instead of random damage and add a critical hit chance and limited uses for each ability
 
     damage_dealt = int(random.randint(10,35) / difficulty)
+    critical_hit = random.randint(1, 10)
+    if critical_hit == 7:
+        damage_dealt *= 2
     enemy.health -= damage_dealt
-    return damage_dealt
+    return (damage_dealt, critical_hit)
 
 def enemy_attack(enemy, character):
     ability = random.choice(enemy.abilities)
@@ -105,8 +108,11 @@ def main():
         if choice >= 0 and choice < len(character.abilities):
             time.sleep(0.7)
             print(f"You used {character.abilities[choice]}!")
-            damage_dealt = player_attack(enemy, difficulty)
+            damage_dealt, critical_hit = player_attack(enemy, difficulty)
             time.sleep(0.7)
+            if critical_hit == 7:
+                print("It was a Critical hit!")
+                time.sleep(0.7)
             print(f"You dealt {damage_dealt}% damage!")
             time.sleep(0.7)
             if enemy.health <= 0:
